@@ -251,3 +251,56 @@ document.addEventListener('DOMContentLoaded', function() {
     updateState();
   });
 });
+
+window.toggleAudio = function(button) {
+  const audioItem = button.closest('.audio-item');
+  const audio = audioItem.querySelector('audio');
+  const allAudioItems = document.querySelectorAll('.audio-item audio');
+
+  allAudioItems.forEach(otherAudio => {
+    if (otherAudio !== audio && !otherAudio.paused) {
+      otherAudio.pause();
+      const otherButton = otherAudio.closest('.audio-item').querySelector('.audio-control');
+      otherButton.classList.remove('playing');
+    }
+  });
+
+  if (audio.paused) {
+    audio.play();
+    button.classList.add('playing');
+  } else {
+    audio.pause();
+    button.classList.remove('playing');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const audioButtons = document.querySelectorAll('.audio-control');
+
+  audioButtons.forEach(button => {
+    button.removeAttribute('onclick');
+    button.addEventListener('click', function() {
+      toggleAudio(this);
+    });
+  });
+
+  const audioElements = document.querySelectorAll('.audio-item audio');
+
+  audioElements.forEach(audio => {
+    const button = audio.closest('.audio-item').querySelector('.audio-control');
+
+    audio.addEventListener('ended', function() {
+      button.classList.remove('playing');
+    });
+
+    audio.addEventListener('pause', function() {
+      button.classList.remove('playing');
+    });
+
+    audio.addEventListener('error', function() {
+      button.classList.remove('playing');
+      button.style.backgroundColor = '#f44336';
+      button.title = 'Ошибка загрузки аудио';
+    });
+  });
+});
