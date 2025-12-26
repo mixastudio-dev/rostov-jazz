@@ -1,18 +1,3 @@
-const header = document.querySelector('header');
-
-if (header) {
-  const toggleScrolledClass = () => {
-    if (window.scrollY > 0) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
-  };
-
-  window.addEventListener('scroll', toggleScrolledClass);
-  toggleScrolledClass();
-}
-
 document.addEventListener('DOMContentLoaded', function() {
   const anchorLinks = document.querySelectorAll('a[href^="#"]');
 
@@ -97,7 +82,7 @@ var swiper1 = new Swiper(".gallery-slider", {
   // },
   breakpoints: {
     320: {
-      slidesPerView: 1.2,
+      slidesPerView: 1.25,
       spaceBetween: 20,
     },
     600: {
@@ -303,4 +288,140 @@ document.addEventListener('DOMContentLoaded', function() {
       button.title = 'Ошибка загрузки аудио';
     });
   });
+});
+
+
+const popup = document.querySelector('.header-nav');
+const openButton = document.querySelector('.btn-popup-menu');
+const closeButton = document.querySelector('.close-popup-menu');
+const body = document.body;
+
+function openPopup() {
+  popup.classList.add('show');
+  body.style.overflow = 'hidden';
+}
+
+function closePopup() {
+  popup.classList.remove('show');
+  body.style.overflow = '';
+}
+
+openButton.addEventListener('click', openPopup);
+closeButton.addEventListener('click', closePopup);
+
+popup.addEventListener('click', function(e) {
+  if (e.target === popup) {
+    closePopup();
+  }
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && popup.classList.contains('show')) {
+    closePopup();
+  }
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  function isMobileResolution() {
+    return window.innerWidth <= 1024;
+  }
+
+  function handleMenuAccordion() {
+    const menuItems = document.querySelectorAll(".header-nav .menu-item-has-children");
+
+    if (isMobileResolution()) {
+      menuItems.forEach(function (item) {
+        item.removeEventListener("click", liClickHandler);
+
+        const link = item.querySelector("a:first-child");
+        if (link) {
+          link.removeEventListener("click", linkClickHandler);
+        }
+
+        item.addEventListener("click", liClickHandler);
+
+        if (link) {
+          link.addEventListener("click", linkClickHandler);
+        }
+
+        const subMenu = item.querySelector("ul");
+        if (subMenu) {
+          if (item.classList.contains("show")) {
+            subMenu.style.height = subMenu.scrollHeight + "px";
+          } else {
+            subMenu.style.height = "0px";
+          }
+        }
+      });
+    } else {
+      menuItems.forEach(function (item) {
+        item.removeEventListener("click", liClickHandler);
+        const link = item.querySelector("a:first-child");
+        if (link) {
+          link.removeEventListener("click", linkClickHandler);
+        }
+        const subMenu = item.querySelector("ul");
+        if (subMenu) {
+          subMenu.style.height = "";
+        }
+      });
+    }
+  }
+
+  function liClickHandler(e) {
+    if (e.target === this || e.target.parentElement === this) {
+      if (e.target.tagName === 'A') return;
+      toggleSubmenu(this);
+    }
+  }
+
+  function linkClickHandler(e) {
+    const parentLi = this.closest('.menu-item-has-children');
+    if (!parentLi) return;
+
+    if (!parentLi.classList.contains("show")) {
+      e.preventDefault();
+      toggleSubmenu(parentLi);
+    }
+  }
+
+  function toggleSubmenu(liElement) {
+    const subMenu = liElement.querySelector("ul");
+    if (!subMenu) return;
+
+    if (!liElement.classList.contains("show")) {
+      document.querySelectorAll(".header-nav .menu-item-has-children.show").forEach(function (openItem) {
+        if (openItem !== liElement) {
+          const openSubMenu = openItem.querySelector("ul");
+          openItem.classList.remove("show");
+          if (openSubMenu) {
+            openSubMenu.style.height = "0px";
+          }
+        }
+      });
+    }
+
+    liElement.classList.toggle("show");
+
+    if (liElement.classList.contains("show")) {
+      const height = subMenu.scrollHeight + "px";
+      subMenu.style.height = "0px";
+      setTimeout(() => {
+        subMenu.style.height = height;
+      }, 10);
+    } else {
+      subMenu.style.height = "0px";
+    }
+  }
+
+  let resizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      handleMenuAccordion();
+    }, 250);
+  });
+
+  handleMenuAccordion();
 });
