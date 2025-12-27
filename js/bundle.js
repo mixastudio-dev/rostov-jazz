@@ -83,7 +83,7 @@ var swiper1 = new Swiper(".gallery-slider", {
   breakpoints: {
     320: {
       slidesPerView: 1.25,
-      spaceBetween: 20,
+      spaceBetween: 10,
     },
     600: {
       slidesPerView: 2.2,
